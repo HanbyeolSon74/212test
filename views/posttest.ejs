@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="text" id="username" placeholder="아이디를 입력하세요" />
+    <input type="password" id="password" placeholder="비밀번호를 입력하세요" />
+
+    <button id="login-btn">로그인</button>
+
+    <div id="login-message" class="message"></div>
+
+    <script>
+      document
+        .getElementById("login-btn")
+        .addEventListener("click", function () {
+          const id = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+
+          axios({
+            method: "get",
+            url: "/posttest",
+            params: { id, password },
+          })
+            .then((response) => {
+              const messageElement = document.getElementById("login-message");
+              if (response.data.success) {
+                messageElement.textContent = response.data.message;
+                messageElement.className = "message success";
+              } else {
+                messageElement.textContent = response.data.message;
+                messageElement.className = "message error";
+              }
+            })
+            .catch((error) => {
+              console.error("로그인 오류:", error);
+            });
+        });
+    </script>
+  </body>
+</html>

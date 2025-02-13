@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>회원가입</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <div class="signup-container">
+      <h2>회원가입</h2>
+
+      <div class="form-group">
+        <label for="username">이름</label>
+        <input type="text" id="username" placeholder="이름을 입력하세요" />
+      </div>
+
+      <div class="form-group">
+        <label>성별</label>
+        <div class="gender-group">
+          <label><input type="radio" name="gender" value="male" /> 남자</label>
+          <label
+            ><input type="radio" name="gender" value="female" /> 여자</label
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>생년월일</label>
+        <div style="display: flex; gap: 10px">
+          <select id="birth-year"></select>
+          <select id="birth-month"></select>
+          <select id="birth-day"></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>관심사</label>
+        <div class="interest-group">
+          <label
+            ><input type="checkbox" name="interest" value="travel" />
+            여행</label
+          >
+          <label
+            ><input type="checkbox" name="interest" value="fashion" />
+            패션</label
+          >
+          <label
+            ><input type="checkbox" name="interest" value="food" /> 음식</label
+          >
+        </div>
+      </div>
+
+      <button class="signup-btn" id="signup-btn">회원가입</button>
+    </div>
+
+    <script>
+      // 생년월일 옵션 추가
+      function populateBirthOptions() {
+        const yearSelect = document.getElementById("birth-year");
+        const monthSelect = document.getElementById("birth-month");
+        const daySelect = document.getElementById("birth-day");
+
+        for (let i = 2010; i >= 1920; i--) {
+          let option = document.createElement("option");
+          option.value = i;
+          option.textContent = i + "년";
+          yearSelect.appendChild(option);
+        }
+
+        for (let i = 1; i <= 12; i++) {
+          let option = document.createElement("option");
+          option.value = i;
+          option.textContent = i + "월";
+          monthSelect.appendChild(option);
+        }
+
+        for (let i = 1; i <= 31; i++) {
+          let option = document.createElement("option");
+          option.value = i;
+          option.textContent = i + "일";
+          daySelect.appendChild(option);
+        }
+      }
+
+      populateBirthOptions();
+
+      // 회원가입 버튼 클릭 이벤트
+      document
+        .getElementById("signup-btn")
+        .addEventListener("click", function () {
+          const name = document.getElementById("username").value;
+          const gender = document.querySelector(
+            'input[name="gender"]:checked'
+          )?.value;
+          const birthYear = document.getElementById("birth-year").value;
+          const birthMonth = document.getElementById("birth-month").value;
+          const birthDay = document.getElementById("birth-day").value;
+          const interests = Array.from(
+            document.querySelectorAll('input[name="interest"]:checked')
+          ).map((el) => el.value);
+
+          if (!name || !gender || !birthYear || !birthMonth || !birthDay) {
+            alert("모든 정보를 입력해주세요.");
+            return;
+          }
+
+          // 서버 요청 데이터
+          const data = {
+            name,
+            gender,
+            birthYear,
+            birthMonth,
+            birthDay,
+            interests,
+          };
+
+          console.log("회원가입 요청 데이터:", data);
+
+          axios({
+            method: "get",
+            url: "/axiostest",
+            params: data,
+          }).then((res) => {
+            console.log("서버 응답:", res.data);
+          });
+        });
+    </script>
+  </body>
+</html>
