@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일 업로드 테스트</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <h1>파일 한 개 올리기</h1>
+    <form onsubmit="return fileUpload(event)" enctype="multipart/form-data">
+      <input type="file" name="files" id="file" required /><br />
+      <input type="text" name="title" placeholder="파일 제목 입력" /><br />
+      <button type="submit">업로드</button>
+      <br />
+
+      <h3>업로드된 파일</h3>
+      <img
+        id="uploadedImg"
+        src=""
+        width="200"
+        height="200"
+        style="display: none"
+      />
+    </form>
+
+    <h1>파일 여러 개 올리기</h1>
+    <form
+      onsubmit="return multipleFileUpload(event)"
+      enctype="multipart/form-data"
+    >
+      <input
+        type="file"
+        name="files"
+        id="multipleFiles"
+        multiple
+        required
+      /><br />
+      <button type="submit">업로드</button>
+    </form>
+
+    <h3>업로드된 파일</h3>
+    <div id="uploadedFiles"></div>
+
+    <script>
+      function fileUpload(event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+        const fileInput = document.getElementById("file");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("파일을 선택하세요.");
+          return false;
+        }
+
+        formData.append("files", file);
+
+        axios
+          .post("/upload", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((response) => {
+            console.log("서버 응답:", response.data);
+
+            // 업로드된 이미지 표시
+            const uploadedImg = document.getElementById("uploadedImg");
+            uploadedImg.src = response.data.url;
+            uploadedImg.style.display = "block";
+          })
+          .catch((error) => {
+            console.error("업로드 에러:", error);
+            alert("파일 업로드 실패");
+          });
+
+        return false;
+      }
+
+      function multipleFileUpload(event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+        const fileInput = document.getElementById("multipleFiles");
+        const files = fileInput.files;
+
+        if (files.length === 0) {
+          alert("파일을 선택하세요.");
+          return false;
+        }
+
+        // FormData에 모든 파일 추가
+        for (let i = 0; i < files.length; i++) {
+          formData.append("files", files[i]);
+        }
+
+        axios
+          .post("/upload-multiple", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((response) => {
+            console.log("서버 응답:", response.data);
+
+            const uploadedFilesDiv = document.getElementById("uploadedFiles");
+            uploadedFilesDiv.innerHTML = ""; // 기존 이미지 제거 후 새로 추가
+
+            response.data.urls.forEach((url) => {
+              const imgElement = document.createElement("img");
+              imgElement.src = url;
+              imgElement.width = 200;
+              imgElement.height = 200;
+              imgElement.style.margin = "10px";
+              uploadedFilesDiv.appendChild(imgElement);
+            });
+          })
+          .catch((error) => {
+            console.error("업로드 에러:", error);
+            alert("파일 업로드 실패");
+          });
+
+        return false;
+      }
+    </script>
+  </body>
+</html>
