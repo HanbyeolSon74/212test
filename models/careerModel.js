@@ -80,16 +80,7 @@ const careers = [
   },
 ];
 
-// 총 버튼은 5개 (남자, 여자 , title, 영화, 드라마)
-// title버튼을 누르면 같은 드라마테이블, 같은영화테이블, 같은 뮤지컬테이블 한번에 보여주기
-// 1. 배우 리스트 (이름,나이,커리어) 테이블 형식으로
-//  2. 남자 배우 리스트 (이름,나이,커리어) 테이블 형식으로
-//  3. 여자 배우 리스트 (이름,나이,커리어) 테이블 형식으로
-//  4. 같은 드라마 || 같은 영화 || 같은 뮤지컬 나온 배우들 (카테고리, 제목, 배우 이름, 역할 ) 테이블
-//  5. 카테고리 영화만 따로 만들어서 (카테고리 이름, 제목, 배우 이름, 역할) 테이블
-//  6. 카테고리 드라마만 따로 만들어서 (카테고리 이름, 제목, 배우 이름, 역할) 테이블
-
-// 전체 리스트 가져오기
+// 전체 배우 리스트
 const getAllCareers = () => {
   return careers.map((career) => ({
     name: career.userName,
@@ -98,18 +89,7 @@ const getAllCareers = () => {
   }));
 };
 
-// 특정 아이디로 경력 가져오기
-const getCareerById = (id) => {
-  const career = careers.find((career) => career.id === parseInt(id));
-  if (!career) return null;
-  return {
-    name: career.userName,
-    age: career.age,
-    careers: career.careers,
-  };
-};
-
-// 남자 배우 리스트 가져오기
+// 남자 배우 리스트
 const getMaleActors = () => {
   return careers
     .filter((career) => career.careers.some((job) => job.gender === "남자"))
@@ -120,7 +100,7 @@ const getMaleActors = () => {
     }));
 };
 
-// 여자 배우 리스트 가져오기
+// 여자 배우 리스트
 const getFemaleActors = () => {
   return careers
     .filter((career) => career.careers.some((job) => job.gender === "여자"))
@@ -131,34 +111,77 @@ const getFemaleActors = () => {
     }));
 };
 
-// 같은 드라마, 영화, 뮤지컬에 출연한 배우들 (카테고리와 제목에 맞는 배우들)
-const getActorsByCategoryAndTitle = (category, title) => {
-  const result = careers
-    .map((career) =>
-      career.careers
-        .filter(
-          (job) => job.category === category && job.title === title // 카테고리와 제목에 맞는 배우만
-        )
-        .map((job) => ({
-          category: job.category,
-          title: job.title,
-          actor: career.userName,
-          role: job.role,
-        }))
-    )
-    .flat();
+//  4. 같은 드라마 || 같은 영화 || 같은 뮤지컬 나온 배우들 (카테고리, 제목, 배우 이름, 역할 ) 테이블
+const getSameCareers = () => {
+  let titleCount = { drama: {}, movie: {}, musical: {} };
+  let title_lst = { drama: [], movie: [], musical: [] };
 
-  return result;
+  // careers 데이터를 돌며 각 카테고리 별로 제목의 출현 횟수를 셈
+  careers.forEach((element) => {
+    element.careers.forEach((item) => {
+      if (item.category === "drama") {
+        titleCount.drama[item.title] = (titleCount.drama[item.title] || 0) + 1;
+      } else if (item.category === "movie") {
+        titleCount.movie[item.title] = (titleCount.movie[item.title] || 0) + 1;
+      } else if (item.category === "musical") {
+        titleCount.musical[item.title] =
+          (titleCount.musical[item.title] || 0) + 1;
+      }
+    });
+  });
+
+  // 출현 횟수가 2번 이상인 제목을 각 카테고리 리스트에 추가
+  for (let title in titleCount.drama) {
+    if (titleCount.drama[title] > 1) title_lst.drama.push(title);
+  }
+
+  for (let title in titleCount.movie) {
+    if (titleCount.movie[title] > 1) title_lst.movie.push(title);
+  }
+
+  for (let title in titleCount.musical) {
+    if (titleCount.musical[title] > 1) title_lst.musical.push(title);
+  }
+
+  // 각 카테고리별로 필터링된 배우 리스트
+  const sameCareers = {
+    drama: {},
+    movie: {},
+    musical: {},
+  };
+
+  careers.forEach((career) => {
+    career.careers.forEach((job) => {
+      if (
+        (title_lst.drama.includes(job.title) && job.category === "drama") ||
+        (title_lst.movie.includes(job.title) && job.category === "movie") ||
+        (title_lst.musical.includes(job.title) && job.category === "musical")
+      ) {
+        if (!sameCareers[job.category][job.title]) {
+          sameCareers[job.category][job.title] = [];
+        }
+        sameCareers[job.category][job.title].push({
+          name: career.userName,
+          role: job.role,
+        });
+      }
+    });
+  });
+
+  return sameCareers;
 };
 
 // 카테고리별 필터링 (영화, 드라마, 뮤지컬)
 const getCategoryActors = (category) => {
   return careers
-    .filter((career) => career.careers.some((job) => job.category === category))
+    .filter((career) => {
+      // 해당 카테고리가 맞는지 확인
+      return career.careers.some((job) => job.category === category);
+    })
     .map((career) => ({
       category: category,
       actors: career.careers
-        .filter((job) => job.category === category)
+        .filter((job) => job.category === category) // 해당 카테고리만 필터링
         .map((job) => ({
           title: job.title,
           role: job.role,
@@ -169,9 +192,8 @@ const getCategoryActors = (category) => {
 
 module.exports = {
   getAllCareers,
-  getCareerById,
   getMaleActors,
   getFemaleActors,
-  getActorsByCategoryAndTitle,
   getCategoryActors,
+  getSameCareers, // getSameCareers 함수 추가
 };

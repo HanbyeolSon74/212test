@@ -2,23 +2,19 @@ const express = require("express");
 const router = express.Router();
 const careerController = require("../controllers/careerController");
 
-// 전체 배우 리스트 가져오기
+// 모든 배우 조회
 router.get("/", careerController.getAllCareers);
 
-// 남자 배우 리스트
-router.get("/maleActors", careerController.getMaleActors);
+// 남자 배우 조회
+router.get("/male", careerController.getMaleActors);
 
-// 여자 배우 리스트
-router.get("/femaleActors", careerController.getFemaleActors);
+// 여자 배우 조회
+router.get("/female", careerController.getFemaleActors);
 
-// 특정 카테고리의 배우들
+// 특정 카테고리 배우 조회 (영화, 드라마, 뮤지컬)
 router.get("/category/:category", careerController.getCategoryActors);
 
-// 카테고리와 제목에 맞는 배우 목록
-// GET /careers/actorsByCategory 경로 추가
-router.get("/actorsByCategory", careerController.getActorsByCategory);
-
-// 특정 배우 정보
-router.get("/:id", careerController.getCareerById);
+// 같은 드라마, 영화, 뮤지컬에 출연한 배우 조회
+router.get("/sameCareers", careerController.showSameCareers);
 
 module.exports = router;

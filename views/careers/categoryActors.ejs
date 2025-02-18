@@ -3,31 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title><%= category %> 배우 리스트</title>
   </head>
   <body>
     <h1><%= category %> 배우 리스트</h1>
     <table border="1">
       <thead>
         <tr>
-          <th>카테고리</th>
           <th>제목</th>
           <th>배우 이름</th>
-          <th>역할</th>
+          <th>배역</th>
         </tr>
       </thead>
       <tbody>
-        <% categoryActors.forEach(actor => { %> <% actor.actors.forEach(job => {
-        %>
+        <% categoryActors.forEach((categoryData) => { %> <%
+        categoryData.actors.forEach((actor) => { %>
         <tr>
-          <td><%= actor.category %></td>
-          <td><%= job.title %></td>
-          <td><%= job.actor %></td>
-          <td><%= job.role %></td>
+          <td><%= actor.title %></td>
+          <td><%= actor.actor %></td>
+          <td><%= actor.role %></td>
         </tr>
         <% }) %> <% }) %>
       </tbody>
     </table>
-    <a href="/careers"> 뒤로가기</a>
+    <a href="/careers">뒤로가기</a>
   </body>
 </html>

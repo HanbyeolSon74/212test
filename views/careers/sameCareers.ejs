@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>같은 작품 출연 배우</title>
+  </head>
+  <body>
+    <h1>같은 드라마 || 같은 영화 || 같은 뮤지컬 출연 배우</h1>
+
+    <% ["drama", "movie", "musical"].forEach(category => { %>
+    <h2>
+      같은 <%= category === "drama" ? "드라마" : category === "movie" ? "영화" :
+      "뮤지컬" %>
+    </h2>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>제목</th>
+          <th>이름</th>
+          <th>역할</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% Object.keys(sameCareers[category]).forEach(title => { %> <%
+        sameCareers[category][title].forEach((actor, index) => { %>
+        <tr>
+          <% if (index === 0) { %>
+          <td rowspan="<%= sameCareers[category][title].length %>">
+            <%= title %>
+          </td>
+          <% } %>
+          <td><%= actor.name %></td>
+          <td><%= actor.role %></td>
+        </tr>
+        <% }); %> <% }); %>
+      </tbody>
+    </table>
+    <% }); %>
+
+    <a href="/">홈으로</a>
+  </body>
+</html>
