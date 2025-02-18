@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careers List</title>
+  </head>
+  <body>
+    <h1>배우 리스트</h1>
+
+    <a href="/careers/maleActors">남자</a><br />
+    <a href="/careers/femaleActors">여자</a><br />
+    <a href="/careers/actorsByCategory">title</a><br />
+    <a href="/careers/category/movie">영화</a><br />
+    <a href="/careers/category/drama">드라마</a><br />
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>이름</th>
+          <th>나이</th>
+          <th>커리어</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% careers.forEach(actor => { %>
+        <tr>
+          <td><%= actor.name %></td>
+          <td><%= actor.age %></td>
+          <td>
+            <ul>
+              <% actor.careers.forEach(job => { %>
+              <li>
+                <%= job.category %> - <%= job.title %> ( <%= job.role %> )
+              </li>
+              <% }); %>
+            </ul>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </body>
+</html>
